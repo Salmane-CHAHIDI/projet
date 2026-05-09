@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">⚙️ Administration</h2>
+
+<div class="card p-4 mb-4 shadow-sm">
+    <form method="POST" action="/add_subscription">
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" name="name" class="form-control" placeholder="Nom (ex: LeMonde)">
+            </div>
+            <div class="col-md-6">
+                <input type="text" name="url" class="form-control" placeholder="URL sitemap">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100">Ajouter</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<h4>📄 Abonnements</h4>
+
+<ul class="list-group">
+{% for sub in subs %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ sub.name }}
+        <a href="/delete_subscription/{{ sub._id }}" class="btn btn-danger btn-sm">Supprimer</a>
+    </li>
+{% endfor %}
+</ul>
+
+{% endblock %}
