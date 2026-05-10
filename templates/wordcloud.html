@@ -2,16 +2,62 @@
 
 {% block content %}
 
-<h2 class="mb-4">☁️ Nuage de mots</h2>
+<h2>☁️ Nuage de Mots</h2>
 
-<div class="text-center">
-    <img src="{{ url_for('static', filename=image) }}" class="img-fluid shadow">
+<!-- Options de génération -->
+<div class="card p-4 mb-4 shadow-sm">
+    <form method="GET" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">Nombre de mots</label>
+            <input type="number" name="num_words" class="form-control" min="10" max="200" 
+                   value="{{ num_words or 80 }}">
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">Date début</label>
+            <input type="date" name="start_date" class="form-control">
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">Date fin</label>
+            <input type="date" name="end_date" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Source</label>
+            <select name="source" class="form-control">
+                <option value="">Toutes les sources</option>
+                {% for src in sources %}
+                    <option value="{{ src }}">{{ src }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Générer</button>
+        </div>
+    </form>
 </div>
 
-<div class="text-center mt-3">
-    <a href="{{ url_for('static', filename=image) }}" download class="btn btn-success">
-        Télécharger
-    </a>
-</div>
+<!-- Affichage du nuage -->
+{% if image %}
+    <div class="text-center mb-4">
+        <img src="{{ url_for('static', filename=image) }}" class="img-fluid shadow" alt="Nuage de mots">
+    </div>
+
+    <div class="text-center">
+        <a href="{{ url_for('static', filename=image) }}" download class="btn btn-success btn-lg">
+            ⬇️ Télécharger SVG
+        </a>
+    </div>
+{% elif error %}
+    <div class="alert alert-danger" role="alert">
+        ❌ {{ error }}
+    </div>
+{% else %}
+    <div class="alert alert-warning" role="alert">
+        ⚠️ Cliquez sur "Générer" pour créer le nuage de mots.
+    </div>
+{% endif %}
 
 {% endblock %}

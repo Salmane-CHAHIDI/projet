@@ -1,7 +1,40 @@
-<h2>Historique des clics</h2>
+{% extends "base.html" %}
 
-<ul>
-{% for c in data %}
-  <li>{{ c.date_consultation }}</li>
-{% endfor %}
-</ul>
+{% block content %}
+
+<h2>📊 Historique des Consultations</h2>
+
+{% if data %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID Article</th>
+                    <th>Date de Consultation</th>
+                    <th>Article</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for consultation in data %}
+                    <tr>
+                        <td>
+                            <code>{{ consultation.article_id }}</code>
+                        </td>
+                        <td>
+                            📅 {{ consultation.date_consultation.strftime('%d/%m/%Y %H:%M:%S') }}
+                        </td>
+                        <td>
+                            <small class="text-muted">Consultation</small>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info" role="alert">
+        ℹ️ Aucune consultation enregistrée.
+    </div>
+{% endif %}
+
+{% endblock %}

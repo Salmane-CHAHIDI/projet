@@ -2,48 +2,93 @@
 
 {% block content %}
 
-<h2 class="mb-4">📰 Actualités récentes</h2>
-<form method="GET" class="mb-4">
-    <div class="row">
+<h2>📰 Actualités Récentes</h2>
 
+<!-- Formulaire de recherche -->
+<div class="card p-4 mb-4 shadow-sm">
+    <form method="GET" class="row g-3">
         <div class="col-md-4">
-            <input type="text" name="keyword" class="form-control" placeholder="Mot-clé">
-        </div>
-
-        <div class="col-md-3">
-            <input type="date" name="start_date" class="form-control">
-        </div>
-
-        <div class="col-md-3">
-            <input type="date" name="end_date" class="form-control">
+            <input type="text" name="keyword" class="form-control" placeholder="Mot-clé..." 
+                   value="{{ keyword or '' }}">
         </div>
 
         <div class="col-md-2">
-            <button class="btn btn-primary w-100">Rechercher</button>
+            <input type="date" name="start_date" class="form-control" 
+                   value="{{ start_date or '' }}" placeholder="Date début">
         </div>
 
-    </div>
-</form>
-<div class="row">
-    {% for article in articles %}
-    <div class="col-md-6 mb-3">
-        <div class="card shadow-sm h-100">
-            <div class="card-body">
-                
-                <h5 class="card-title">
-                    <a href="/click/{{ article._id }}" target="_blank">
-                        {{ article.title }}
-                    </a>
-                </h5>
+        <div class="col-md-2">
+            <input type="date" name="end_date" class="form-control" 
+                   value="{{ end_date or '' }}" placeholder="Date fin">
+        </div>
 
-                <p class="text-muted small">
-                    {{ article.date_publication }}
-                </p>
-                <p class="badge bg-secondary">{{ article.source }}</p>
+        <div class="col-md-2">
+            <select name="source" class="form-control">
+                <option value="">Toutes les sources</option>
+                {% for src in sources %}
+                    <option value="{{ src }}" {% if source == src %}selected{% endif %}>{{ src }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">🔍 Rechercher</button>
+        </div>
+    </form>
+</div>
+
+<!-- Affichage des articles par source -->
+{% if articles_by_source %}
+    {% for source, articles_list in articles_by_source.items() %}
+        <div class="mb-5">
+            <h4 class="mb-3">{{ source }}</h4>
+            <div class="row">
+                {% for article in articles_list %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow-sm h-100">
+                            {% if article.image %}
+                                <img
+                                    src="{{ article.image }}"
+                                    class="card-img-top"
+                                    alt="Image de l'article"
+                                    style="height: 220px; object-fit: cover;"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                                >
+                                <div class="card-img-top d-none" style="height: 220px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                                    <div class="text-center">
+                                        <i class="fas fa-newspaper fa-3x mb-2"></i>
+                                        <p class="mb-0">📰 Actualité</p>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="card-img-top" style="height: 220px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                                    <div class="text-center">
+                                        <i class="fas fa-newspaper fa-3x mb-2"></i>
+                                        <p class="mb-0">📰 Actualité</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="/click/{{ article._id }}" target="_blank" class="text-decoration-none">
+                                        {{ article.title }}
+                                    </a>
+                                </h5>
+                                <p class="text-muted small mb-2">
+                                    📅 {{ article.date_publication.strftime('%d/%m/%Y %H:%M') if article.date_publication else 'N/A' }}
+                                </p>
+                                <span class="badge bg-info">{{ source }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
-    </div>
     {% endfor %}
-</div>
+{% else %}
+    <div class="alert alert-info" role="alert">
+        ℹ️ Aucun article trouvé avec les critères spécifiés.
+    </div>
+{% endif %}
 
 {% endblock %}
