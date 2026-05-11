@@ -23,6 +23,7 @@ consultations.create_index("date_consultation")
 consultations.create_index("article_id")
 favoris.create_index("article_id", unique=True)
 favoris.create_index("date_ajout")
+favoris.create_index("catalogue")
 
 def add_subscription(name, url):
     result = abonnements.insert_one({
@@ -66,15 +67,25 @@ def add_consultation(article_id):
         "date_consultation": datetime.now()
     })
 
-def add_favorite(article_id):
+def add_favorite(article_id, catalogue=None):
     try:
-        favoris.insert_one({
+        favorite_data = {
             "article_id": article_id,
-            "date_ajout": datetime.now()
-        })
+            "date_ajout": datetime.now(),
+            "catalogue": catalogue or "Général"
+        }
+
+        favoris.insert_one(favorite_data)
         return True
     except Exception:
-        # Already in favorites
+        if catalogue:
+            try:
+                favoris.update_one(
+                    {"article_id": article_id},
+                    {"$set": {"catalogue": catalogue}}
+                )
+            except Exception:
+                pass
         return False
 
 def get_favorites():

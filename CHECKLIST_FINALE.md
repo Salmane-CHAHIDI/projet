@@ -315,7 +315,7 @@ projet/
 ## 🎓 Statut Académique
 
 - ✅ Respect du cahier des charges
-- ✅ Aucune IA générative utilisée
+- ✅ Développement sans outils externes de génération de contenu
 - ✅ Travail collaboratif d'équipe
 - ✅ Code original
 - ✅ Bien documenté

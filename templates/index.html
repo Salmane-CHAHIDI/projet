@@ -12,7 +12,7 @@
                 <i class="fas fa-newspaper me-3"></i>Nuage d'Actualité
             </h1>
             <p class="lead text-muted fs-5">
-                Découvrez et analysez les actualités avec notre plateforme d'intelligence artificielle
+                Découvrez et analysez les actualités avec notre plateforme d'analyse et de recherche
             </p>
         </div>
     </div>
@@ -142,7 +142,7 @@
 
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title fw-bold mb-3">
-                                    <a href="/click/{{ article._id }}" target="_blank" class="text-decoration-none text-dark stretched-link">
+                                    <a href="/click/{{ article._id }}" target="_blank" class="text-decoration-none text-dark">
                                         {{ article.title }}
                                     </a>
                                 </h5>
@@ -165,6 +165,20 @@
                                     <div class="mt-3">
                                         <form action="{{ url_for('add_favorite_route') }}" method="post">
                                             <input type="hidden" name="article_id" value="{{ article._id }}">
+                                            <div class="mb-2">
+                                                <select name="catalogue" class="form-select form-select-sm">
+                                                    <option value="Automatique" selected>Catalogue automatique</option>
+                                                    <option value="Sport">Sport</option>
+                                                    <option value="Politique">Politique</option>
+                                                    <option value="Economie">Economie</option>
+                                                    <option value="Technologie">Technologie</option>
+                                                    <option value="Culture">Culture</option>
+                                                    <option value="Santé">Santé</option>
+                                                    <option value="Environnement">Environnement</option>
+                                                    <option value="International">International</option>
+                                                    <option value="Général">Général</option>
+                                                </select>
+                                            </div>
                                             <button type="submit" class="btn btn-outline-warning btn-sm w-100">
                                                 <i class="fas fa-star me-1"></i>Ajouter aux favoris
                                             </button>

@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600">
+<style>@font-face{font-family:'Droid Sans Mono';font-weight:normal;font-style:normal;src:url("data:application/font-woff;charset=utf-8;base64,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")format("woff");}</style>
+<style>text{font-family:'Droid Sans Mono';font-weight:normal;font-style:normal;}</style>
+<rect width="100%" height="100%" style="fill:white"></rect>
+<text transform="translate(386,80)" font-size="120" style="fill:rgb(88, 199, 101)">son</text>
+<text transform="translate(208,217)" font-size="108" style="fill:rgb(86, 198, 103)">après</text>
+<text transform="translate(979,441)" font-size="95" style="fill:rgb(72, 32, 113)">est</text>
+<text transform="translate(743,119)" font-size="91" style="fill:rgb(72, 33, 115)">français</text>
+<text transform="translate(679,210)" font-size="87" style="fill:rgb(31, 159, 136)">ligue</text>
+<text transform="translate(1034,541)" font-size="82" style="fill:rgb(40, 125, 142)">dun</text>
+<text transform="translate(35,384)" font-size="82" style="fill:rgb(129, 211, 77)">mai</text>
+<text transform="translate(715,351)" font-size="81" style="fill:rgb(66, 190, 113)">dune</text>
+<text transform="translate(435,297)" font-size="78" style="fill:rgb(63, 72, 137)">fait</text>
+<text transform="translate(959,236)" font-size="76" style="fill:rgb(72, 33, 115)">deux</text>
+<text transform="translate(639,489)" font-size="76" style="fill:rgb(35, 169, 131)">grand</text>
+<text transform="translate(446,518)" font-size="74" style="fill:rgb(36, 134, 142)">ses</text>
+<text transform="translate(578,593)" font-size="72" style="fill:rgb(44, 114, 142)">ans</text>
+<text transform="translate(80,547)" font-size="70" style="fill:rgb(40, 174, 128)">nouvelle</text>
+<text transform="translate(270,334)" font-size="70" style="fill:rgb(31, 162, 135)">aux</text>
+<text transform="translate(79,80)" font-size="68" style="fill:rgb(52, 182, 121)">pari</text>
+<text transform="translate(268,399)" font-size="66" style="fill:rgb(157, 217, 59)">hantavirus</text>
+<text transform="translate(255,458)" font-size="66" style="fill:rgb(55, 90, 140)">contre</text>
+<text transform="translate(985,363)" font-size="66" style="fill:rgb(69, 56, 130)">top</text>
+<text transform="translate(1004,589)" font-size="63" style="fill:rgb(57, 86, 140)">avant</text>
+<text transform="translate(759,288)" font-size="52" style="fill:rgb(72, 27, 109)">présidentielle</text>
+<text transform="translate(22,435)" font-size="52" style="fill:rgb(82, 197, 105)">cest</text>
+<text transform="translate(539,212)" font-size="52" style="fill:rgb(56, 88, 140)">prix</text>
+<text transform="translate(230,498) rotate(-90)" font-size="52" style="fill:rgb(31, 158, 137)">chez</text>
+<text transform="translate(782,45)" font-size="50" style="fill:rgb(62, 76, 138)">encore</text>
+<text transform="translate(288,125)" font-size="50" style="fill:rgb(42, 120, 142)">emmanuel macron</text>
+<text transform="translate(786,557)" font-size="48" style="fill:rgb(173, 220, 48)">mort</text>
+<text transform="translate(10,591)" font-size="48" style="fill:rgb(42, 119, 142)">leur</text>
+<text transform="translate(675,333) rotate(-90)" font-size="48" style="fill:rgb(70, 50, 126)">rome</text>
+<text transform="translate(528,443)" font-size="48" style="fill:rgb(31, 159, 136)">tennis</text>
+<text transform="translate(708,379)" font-size="46" style="fill:rgb(39, 127, 142)">san</text>
+<text transform="translate(324,291)" font-size="46" style="fill:rgb(62, 73, 137)">fin</text>
+<text transform="translate(964,436) rotate(-90)" font-size="46" style="fill:rgb(33, 143, 141)">face</text>
+<text transform="translate(718,595)" font-size="46" style="fill:rgb(72, 40, 120)">retour</text>
+<text transform="translate(50,499)" font-size="46" style="fill:rgb(59, 187, 117)">tout</text>
+<text transform="translate(162,277)" font-size="46" style="fill:rgb(44, 115, 142)">près</text>
+<text transform="translate(1179,398) rotate(-90)" font-size="46" style="fill:rgb(59, 82, 139)">été</text>
+<text transform="translate(14,30)" font-size="46" style="fill:rgb(59, 187, 117)">euros</text>
+<text transform="translate(151,592)" font-size="46" style="fill:rgb(94, 201, 98)">nouveau</text>
+<text transform="translate(31,187)" font-size="44" style="fill:rgb(72, 40, 120)">être</text>
+<text transform="translate(31,248)" font-size="44" style="fill:rgb(68, 1, 84)">psg</text>
+<text transform="translate(1018,157)" font-size="44" style="fill:rgb(236, 229, 27)">tour</text>
+<text transform="translate(665,413)" font-size="42" style="fill:rgb(197, 224, 33)">homme</text>
+<text transform="translate(57,139)" font-size="42" style="fill:rgb(149, 216, 64)">ukraine</text>
+<text transform="translate(778,155)" font-size="42" style="fill:rgb(69, 53, 129)">trois</text>
+<text transform="translate(963,500)" font-size="42" style="fill:rgb(226, 228, 24)">loi</text>
+<text transform="translate(958,593) rotate(-90)" font-size="42" style="fill:rgb(68, 1, 84)">faire</text>
+<text transform="translate(961,35)" font-size="42" style="fill:rgb(72, 40, 120)">victoire</text>
+<text transform="translate(323,251)" font-size="42" style="fill:rgb(60, 79, 138)">veut</text>
+<text transform="translate(645,532)" font-size="42" style="fill:rgb(221, 227, 24)">passe</text>
+<text transform="translate(502,340)" font-size="42" style="fill:rgb(132, 212, 75)">selon</text>
+<text transform="translate(906,515) rotate(-90)" font-size="42" style="fill:rgb(103, 204, 92)">depuis</text>
+<text transform="translate(412,575)" font-size="42" style="fill:rgb(221, 227, 24)">titre</text>
+<text transform="translate(597,35)" font-size="39" style="fill:rgb(170, 220, 50)">champion</text>
+<text transform="translate(230,43)" font-size="34" style="fill:rgb(208, 225, 28)">cyclisme</text>
+<text transform="translate(172,315)" font-size="32" style="fill:rgb(65, 68, 135)">coupe</text>
+<text transform="translate(295,479)" font-size="32" style="fill:rgb(47, 180, 124)">pays</text>
+<text transform="translate(47,461)" font-size="32" style="fill:rgb(37, 132, 142)">finale</text>
+<text transform="translate(10,67)" font-size="32" style="fill:rgb(48, 105, 142)">cas</text>
+<text transform="translate(574,151)" font-size="32" style="fill:rgb(33, 165, 133)">crise</text>
+<text transform="translate(485,548)" font-size="32" style="fill:rgb(41, 175, 127)">comment</text>
+<text transform="translate(5,213)" font-size="29" style="fill:rgb(71, 13, 96)">gouvernement</text>
+<text transform="translate(779,518)" font-size="29" style="fill:rgb(61, 78, 138)">liga</text>
+<text transform="translate(1128,169)" font-size="29" style="fill:rgb(31, 154, 138)">mans</text>
+<text transform="translate(499,465)" font-size="29" style="fill:rgb(31, 162, 135)">ont</text>
+<text transform="translate(236,148)" font-size="25" style="fill:rgb(127, 211, 78)">paul magnier</text>
+<text transform="translate(605,77)" font-size="24" style="fill:rgb(50, 182, 122)">direct</text>
+<text transform="translate(794,420)" font-size="24" style="fill:rgb(35, 136, 142)">assure</text>
+<text transform="translate(9,310)" font-size="24" style="fill:rgb(49, 181, 123)">moyenorient</text>
+<text transform="translate(295,73)" font-size="24" style="fill:rgb(41, 121, 142)">risque</text>
+<text transform="translate(471,152)" font-size="24" style="fill:rgb(59, 81, 139)">chine</text>
+<text transform="translate(1013,311)" font-size="24" style="fill:rgb(70, 48, 126)">pourquoi</text>
+<text transform="translate(427,355)" font-size="24" style="fill:rgb(59, 81, 139)">nba</text>
+<text transform="translate(38,528) rotate(-90)" font-size="24" style="fill:rgb(127, 211, 78)">place</text>
+<text transform="translate(1034,179)" font-size="24" style="fill:rgb(71, 19, 101)">figaro</text>
+<text transform="translate(1196,129) rotate(-90)" font-size="24" style="fill:rgb(236, 229, 27)">clasico</text>
+<text transform="translate(709,287) rotate(-90)" font-size="23" style="fill:rgb(68, 57, 131)">star</text>
+<text transform="translate(876,233)" font-size="23" style="fill:rgb(165, 219, 54)">déjà</text>
+<text transform="translate(250,459) rotate(-90)" font-size="23" style="fill:rgb(44, 115, 142)">politique</text>
+<text transform="translate(709,352) rotate(-90)" font-size="23" style="fill:rgb(208, 225, 28)">nice</text>
+</svg>

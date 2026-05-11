@@ -74,7 +74,7 @@ def test_wordcloud():
         test_articles = [
             {"title": "France économie croissance PIB"},
             {"title": "Monde politique élections gouvernement"},
-            {"title": "Technologie innovation intelligence artificielle"},
+            {"title": "Technologie innovation numérique"},
             {"title": "Sports football match équipe victoire"},
             {"title": "Culture art musée exposition"}
         ]

@@ -14,6 +14,70 @@ from bson.objectid import ObjectId
 
 from dbMongo import articles as articles_collection
 
+DEFAULT_CATALOGUES = [
+    "Automatique",
+    "Sport",
+    "Politique",
+    "Economie",
+    "Technologie",
+    "Culture",
+    "Santé",
+    "Environnement",
+    "International",
+    "Général"
+]
+
+AUTO_CATALOGUE_LABEL = "Automatique"
+
+
+def normalize_catalogue(name):
+    if not name:
+        return None
+
+    value = name.strip()
+    if not value:
+        return None
+
+    return value
+
+
+def infer_catalogue(article):
+    """Détecte automatiquement un catalogue à partir du titre ou de la source."""
+    if not article:
+        return "Général"
+
+    title = (article.get("title") or "").lower()
+    source = (article.get("source") or "").lower()
+
+    categories = {
+        "Sport": ["sport", "football", "rugby", "tennis", "basket", "olymp", "match", "coupe", "victoire", "compétition"],
+        "Politique": ["politique", "gouvernement", "parlement", "élection", "ministre", "loi", "sénat", "président", "vote"],
+        "Economie": ["économie", "finance", "marché", "entreprise", "banque", "croissance", "conjoncture", "inflation", "commerce"],
+        "Technologie": ["tech", "technologie", "numérique", "ia", "intelligence", "robot", "données", "cyber", "startup"],
+        "Culture": ["culture", "cinéma", "musique", "festival", "art", "livre", "théâtre", "exposition"],
+        "Santé": ["santé", "médical", "hôpital", "vaccin", "bien-être", "psychologie", "médecine"],
+        "Environnement": ["climat", "écologie", "environnement", "biodiversité", "pollution", "renouvelable", "écologique"],
+        "International": ["international", "étranger", "monde", "diplomatie", "conflit", "guerre", "ONU"]
+    }
+
+    for label, keywords in categories.items():
+        for keyword in keywords:
+            if keyword in title or keyword in source:
+                return label
+
+    if "le monde" in source or "libération" in source or "france" in source:
+        return "Actualité"
+
+    return "Général"
+
+
+def group_favorites_by_catalogue(favorites):
+    grouped = {}
+    for fav in favorites:
+        catalogue = fav.get("catalogue") or infer_catalogue(fav.get("article"))
+        grouped.setdefault(catalogue, []).append(fav)
+    return grouped
+
 # Supprimer les articles de plus de 30 jours de la source Le Monde
 result = articles_collection.delete_many({
 })
@@ -29,6 +93,22 @@ app = Flask(
     template_folder=os.path.join(os.path.dirname(__file__), "../templates"),
     static_folder=os.path.join(os.path.dirname(__file__), "../static")
 )
+
+
+def migrate_missing_favorite_catalogues():
+    from dbMongo import favoris
+
+    favorites = get_favorites()
+    for fav in favorites:
+        if not fav.get("catalogue"):
+            catalogue = infer_catalogue(fav.get("article")) or "Général"
+            try:
+                favoris.update_one({"_id": fav["_id"]}, {"$set": {"catalogue": catalogue}})
+            except Exception as e:
+                logger.warning(f"Impossible de migrer le catalogue du favori {fav['_id']}: {e}")
+
+
+migrate_missing_favorite_catalogues()
 
 @app.route("/collect_all")
 def collect_all():
@@ -72,18 +152,44 @@ def historique():
 
 @app.route("/favoris")
 def favoris():
+    selected_catalogue = request.args.get("catalogue")
     favorites = get_favorites()
-    return render_template("favoris.html", favorites=favorites)
+    favorites_by_catalogue = group_favorites_by_catalogue(favorites)
+    available_catalogues = sorted(favorites_by_catalogue.keys())
+
+    if selected_catalogue:
+        favorites_by_catalogue = {
+            selected_catalogue: favorites_by_catalogue.get(selected_catalogue, [])
+        }
+
+    return render_template(
+        "favoris.html",
+        favorites=favorites,
+        favorites_by_catalogue=favorites_by_catalogue,
+        catalogues=available_catalogues,
+        selected_catalogue=selected_catalogue
+    )
 
 @app.route("/add_favorite", defaults={"id": None}, methods=["POST"])
 @app.route("/add_favorite/<id>", methods=["POST"])
 def add_favorite_route(id=None):
     article_id = request.form.get("article_id") or id
+    catalogue = request.form.get("catalogue")
 
     try:
         if article_id:
             article_obj = ObjectId(article_id)
-            add_favorite(article_obj)
+            article = articles.find_one({"_id": article_obj})
+
+            if not catalogue or catalogue == AUTO_CATALOGUE_LABEL:
+                catalogue = infer_catalogue(article)
+            else:
+                catalogue = catalogue.strip() or infer_catalogue(article)
+
+            if not catalogue:
+                catalogue = "Général"
+
+            add_favorite(article_obj, catalogue=catalogue)
     except Exception as e:
         logger.error(f"Erreur ajout favoris: {e}")
 
