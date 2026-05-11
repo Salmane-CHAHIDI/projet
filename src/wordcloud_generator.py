@@ -64,10 +64,13 @@ def generate_wordcloud(articles, num_words=80, filename=None):
             background_color="white",
             stopwords=stopwords,
             colormap="viridis",
-            max_words=max(num_words, 20),  # Au moins 20 mots
-            min_font_size=10,
-            prefer_horizontal=0.7,
+            max_words=num_words,
+            margin=5,
+            min_font_size=12,
+            max_font_size=120,
+            prefer_horizontal=0.9,
             relative_scaling=0.5,
+            random_state=42,
             min_word_length=3  # Ignorer les mots < 3 caractères
         )
 

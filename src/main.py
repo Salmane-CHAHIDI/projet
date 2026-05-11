@@ -6,7 +6,8 @@ from scraper import fetch_articles
 from dbMongo import (
     insert_articles, add_consultation, add_subscription, get_subscriptions,
     delete_subscription, get_articles, search_articles, get_consultations,
-    articles, get_sources, update_subscription_fetch, get_articles_by_source
+    articles, get_sources, update_subscription_fetch, get_articles_by_source,
+    add_favorite, get_favorites
 )
 from wordcloud_generator import generate_wordcloud
 from bson.objectid import ObjectId
@@ -68,6 +69,25 @@ def admin():
 def historique():
     data = get_consultations()
     return render_template("historique.html", data=data)
+
+@app.route("/favoris")
+def favoris():
+    favorites = get_favorites()
+    return render_template("favoris.html", favorites=favorites)
+
+@app.route("/add_favorite", defaults={"id": None}, methods=["POST"])
+@app.route("/add_favorite/<id>", methods=["POST"])
+def add_favorite_route(id=None):
+    article_id = request.form.get("article_id") or id
+
+    try:
+        if article_id:
+            article_obj = ObjectId(article_id)
+            add_favorite(article_obj)
+    except Exception as e:
+        logger.error(f"Erreur ajout favoris: {e}")
+
+    return redirect(request.referrer or "/")
 
 @app.route("/click/<id>")
 def click(id):

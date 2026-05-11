@@ -11,6 +11,7 @@ TEAM_INITIALS = "CSAE"
 articles = db[f"G_{TEAM_INITIALS}_articles"]
 abonnements = db[f"G_{TEAM_INITIALS}_abonnements"]
 consultations = db[f"G_{TEAM_INITIALS}_consultations"]
+favoris = db[f"G_{TEAM_INITIALS}_favoris"]
 
 # Indexes pour optimisation des requêtes
 articles.create_index("url", unique=True)
@@ -20,6 +21,8 @@ articles.create_index("source")
 abonnements.create_index("created_at")
 consultations.create_index("date_consultation")
 consultations.create_index("article_id")
+favoris.create_index("article_id", unique=True)
+favoris.create_index("date_ajout")
 
 def add_subscription(name, url):
     result = abonnements.insert_one({
@@ -39,13 +42,59 @@ def delete_subscription(id):
     abonnements.delete_one({"_id": ObjectId(id)})
 
 def get_consultations():
-    return list(consultations.find().sort("date_consultation", -1))
+    pipeline = [
+        {
+            "$lookup": {
+                "from": f"G_{TEAM_INITIALS}_articles",
+                "localField": "article_id",
+                "foreignField": "_id",
+                "as": "article"
+            }
+        },
+        {
+            "$unwind": "$article"
+        },
+        {
+            "$sort": {"date_consultation": -1}
+        }
+    ]
+    return list(consultations.aggregate(pipeline))
 
 def add_consultation(article_id):
     consultations.insert_one({
         "article_id": article_id,
         "date_consultation": datetime.now()
     })
+
+def add_favorite(article_id):
+    try:
+        favoris.insert_one({
+            "article_id": article_id,
+            "date_ajout": datetime.now()
+        })
+        return True
+    except Exception:
+        # Already in favorites
+        return False
+
+def get_favorites():
+    pipeline = [
+        {
+            "$lookup": {
+                "from": f"G_{TEAM_INITIALS}_articles",
+                "localField": "article_id",
+                "foreignField": "_id",
+                "as": "article"
+            }
+        },
+        {
+            "$unwind": "$article"
+        },
+        {
+            "$sort": {"date_ajout": -1}
+        }
+    ]
+    return list(favoris.aggregate(pipeline))
 
 def search_articles(keyword=None, start_date=None, end_date=None, source=None):
     query = {}

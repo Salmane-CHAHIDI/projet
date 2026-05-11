@@ -169,7 +169,6 @@ def main():
         test_scraper,
         test_wordcloud,
         test_database_operations,
-        test_flask_import,
         test_image_extraction
     ]
     

@@ -5,77 +5,150 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def fetch_articles(sitemap_url):
     """
-    Fetch articles from a sitemap URL.
-    Handles news sitemaps with namespace-aware XPath.
+    Récupère les articles depuis un sitemap XML.
+
+    Compatible avec :
+    - Le Monde
+    - Le Figaro
+    - Les Échos
+    - Franceinfo
+    - France 24
+    - 20 Minutes
+
+    Champs extraits :
+    - title
+    - url
+    - date
+    - image
     """
     try:
-        response = requests.get(sitemap_url, timeout=10)
+        response = requests.get(
+            sitemap_url,
+            timeout=10,
+            headers={
+                "User-Agent": "Mozilla/5.0"
+            }
+        )
         response.raise_for_status()
 
         if response.status_code != 200:
-            logger.warning(f"Erreur récupération sitemap {sitemap_url}: {response.status_code}")
+            logger.warning(
+                f"Erreur récupération sitemap {sitemap_url}: "
+                f"{response.status_code}"
+            )
             return []
 
         root = etree.fromstring(response.content)
-
         articles = []
 
-        # Récupère les balises url
+        # Récupère toutes les balises <url>
         urls = root.xpath("//*[local-name()='url']")
 
         for url in urls:
             try:
-                title = url.xpath(".//*[local-name()='title']/text()")
-                link = url.xpath(".//*[local-name()='loc']/text()")
-                date = url.xpath(".//*[local-name()='publication_date']/text()")
-                
-                # Essayer plusieurs chemins pour les images dans les sitemaps news
-                image = None
-                
-                # Chemin 1: image:image (standard news sitemap)
-                image_candidates = url.xpath(".//*[local-name()='image']/text()")
-                if image_candidates:
-                    image = image_candidates[0]
-                
-                # Chemin 2: news:image (dans la balise news)
-                if not image:
-                    image_candidates = url.xpath(".//*[local-name()='news']//*[local-name()='image']/text()")
-                    if image_candidates:
-                        image = image_candidates[0]
-                
-                # Chemin 3: image:loc (URL de l'image)
-                if not image:
-                    image_candidates = url.xpath(".//*[local-name()='image']//*[local-name()='loc']/text()")
-                    if image_candidates:
-                        image = image_candidates[0]
-                
-                # Alternative for news sitemaps
-                if not date:
-                    date = url.xpath(".//*[local-name()='news']//*[local-name()='publication_date']/text()")
+                # --------------------------------------------------
+                # TITRE
+                # --------------------------------------------------
+                title = url.xpath(
+                    ".//*[local-name()='news']/*[local-name()='title']/text()"
+                )
 
+                # Fallback si le titre n'est pas dans news:title
+                if not title:
+                    title = url.xpath(
+                        ".//*[local-name()='title']/text()"
+                    )
+
+                # --------------------------------------------------
+                # URL DE L'ARTICLE
+                # IMPORTANT : on prend uniquement le loc DIRECT
+                # de <url>, sinon on risque de récupérer image:loc
+                # --------------------------------------------------
+                link = url.xpath(
+                    "./*[local-name()='loc']/text()"
+                )
+
+                # --------------------------------------------------
+                # DATE DE PUBLICATION
+                # --------------------------------------------------
+                date = url.xpath(
+                    ".//*[local-name()='news']/*[local-name()='publication_date']/text()"
+                )
+
+                # Fallback : lastmod
+                if not date:
+                    date = url.xpath(
+                        "./*[local-name()='lastmod']/text()"
+                    )
+
+                # --------------------------------------------------
+                # IMAGE
+                # IMPORTANT :
+                # Les Échos et Le Figaro utilisent :
+                # <image:image>
+                #   <image:loc>https://...jpg</image:loc>
+                # </image:image>
+                #
+                # On prend UNIQUEMENT le PREMIER image:loc direct
+                # sous image:image.
+                # --------------------------------------------------
+                image_candidates = url.xpath(
+                    "./*[local-name()='image']/*[local-name()='loc']/text()"
+                )
+
+                # Fallback pour d'autres formats
+                if not image_candidates:
+                    image_candidates = url.xpath(
+                        ".//*[local-name()='image']/text()"
+                    )
+
+                image = (
+                    image_candidates[0].strip()
+                    if image_candidates and image_candidates[0]
+                    else None
+                )
+
+                # --------------------------------------------------
+                # VALIDATION
+                # --------------------------------------------------
                 if title and link:
                     articles.append({
                         "title": title[0].strip(),
                         "url": link[0].strip(),
-                        "date": date[0] if date else None,
-                        "image": image.strip() if image else None
+                        "date": (
+                            date[0].strip()
+                            if date and date[0]
+                            else None
+                        ),
+                        "image": image
                     })
 
             except Exception as e:
                 logger.error(f"Erreur parsing article: {e}")
                 continue
 
-        logger.info(f"Récupéré {len(articles)} articles de {sitemap_url}")
+        logger.info(
+            f"Récupéré {len(articles)} articles de {sitemap_url}"
+        )
         return articles
-        
+
     except requests.RequestException as e:
-        logger.error(f"Erreur requête sitemap {sitemap_url}: {e}")
+        logger.error(
+            f"Erreur requête sitemap {sitemap_url}: {e}"
+        )
         return []
+
     except etree.XMLSyntaxError as e:
-        logger.error(f"Erreur parsing XML {sitemap_url}: {e}")
+        logger.error(
+            f"Erreur parsing XML {sitemap_url}: {e}"
+        )
         return []
+
     except Exception as e:
-        logger.error(f"Erreur inattendue {sitemap_url}: {e}")
+        logger.error(
+            f"Erreur inattendue {sitemap_url}: {e}"
+        )
         return []

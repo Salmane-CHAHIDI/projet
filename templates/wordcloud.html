@@ -1,62 +1,182 @@
 {% extends "base.html" %}
 
+{% block title %}Nuage de Mots - Nuage d'Actualité{% endblock %}
+
 {% block content %}
 
-<h2>☁️ Nuage de Mots</h2>
+<!-- En-tête de la page -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-gradient mb-3">
+                <i class="fas fa-cloud me-3"></i>Nuage de Mots
+            </h1>
+            <p class="lead text-muted fs-5">
+                Visualisez les tendances et les mots-clés les plus fréquents dans les actualités
+            </p>
+        </div>
+    </div>
+</div>
 
 <!-- Options de génération -->
-<div class="card p-4 mb-4 shadow-sm">
-    <form method="GET" class="row g-3">
-        <div class="col-md-3">
-            <label class="form-label">Nombre de mots</label>
-            <input type="number" name="num_words" class="form-control" min="10" max="200" 
-                   value="{{ num_words or 80 }}">
-        </div>
+<div class="card shadow-professional mb-5">
+    <div class="card-body">
+        <h3 class="card-title mb-4">
+            <i class="fas fa-sliders-h me-2"></i>Paramètres de génération
+        </h3>
 
-        <div class="col-md-2">
-            <label class="form-label">Date début</label>
-            <input type="date" name="start_date" class="form-control">
-        </div>
+        <form method="GET" class="row g-4">
+            <div class="col-md-3">
+                <label for="num_words" class="form-label fw-semibold">
+                    <i class="fas fa-hashtag me-1"></i>Nombre de mots
+                </label>
+                <input type="number" id="num_words" name="num_words" class="form-control form-control-lg"
+                       min="10" max="200" value="{{ num_words or 80 }}">
+                <small class="text-muted">Entre 10 et 200 mots</small>
+            </div>
 
-        <div class="col-md-2">
-            <label class="form-label">Date fin</label>
-            <input type="date" name="end_date" class="form-control">
-        </div>
+            <div class="col-md-3">
+                <label for="start_date" class="form-label fw-semibold">
+                    <i class="fas fa-calendar-alt me-1"></i>Date début
+                </label>
+                <input type="date" id="start_date" name="start_date" class="form-control form-control-lg">
+            </div>
 
-        <div class="col-md-3">
-            <label class="form-label">Source</label>
-            <select name="source" class="form-control">
-                <option value="">Toutes les sources</option>
-                {% for src in sources %}
-                    <option value="{{ src }}">{{ src }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label fw-semibold">
+                    <i class="fas fa-calendar-alt me-1"></i>Date fin
+                </label>
+                <input type="date" id="end_date" name="end_date" class="form-control form-control-lg">
+            </div>
 
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">Générer</button>
-        </div>
-    </form>
+            <div class="col-md-3">
+                <label for="source" class="form-label fw-semibold">
+                    <i class="fas fa-building me-1"></i>Source
+                </label>
+                <select id="source" name="source" class="form-select form-select-lg">
+                    <option value="">Toutes les sources</option>
+                    {% for src in sources %}
+                        <option value="{{ src }}">{{ src }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-play me-2"></i>Générer le nuage de mots
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Affichage du nuage -->
 {% if image %}
-    <div class="text-center mb-4">
-        <img src="{{ url_for('static', filename=image) }}" class="img-fluid shadow" alt="Nuage de mots">
+    <div class="card shadow-professional mb-4">
+        <div class="card-body text-center">
+            <h4 class="card-title mb-4">
+                <i class="fas fa-cloud me-2"></i>Résultat de l'analyse
+            </h4>
+
+            <div class="mb-4">
+                <object data="{{ url_for('static', filename=image) }}" type="image/svg+xml"
+                        class="img-fluid shadow rounded-professional"
+                        style="width:100%; min-height: 500px; max-width: 1000px; margin: 0 auto; display: block;">
+                    <img src="{{ url_for('static', filename=image) }}" alt="Nuage de mots"
+                         class="img-fluid shadow rounded-professional">
+                </object>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <a href="{{ url_for('static', filename=image) }}" download
+                       class="btn btn-success btn-lg w-100">
+                        <i class="fas fa-download me-2"></i>Télécharger le SVG
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="text-center">
-        <a href="{{ url_for('static', filename=image) }}" download class="btn btn-success btn-lg">
-            ⬇️ Télécharger SVG
-        </a>
+    <!-- Informations sur le nuage généré -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-professional h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-info-circle me-2"></i>Informations
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-hashtag text-primary me-2"></i>
+                            <strong>{{ num_words or 80 }}</strong> mots maximum affichés
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-palette text-primary me-2"></i>
+                            Palette de couleurs: Viridis
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-font text-primary me-2"></i>
+                            Police: Optimisée pour la lisibilité
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-mouse-pointer text-primary me-2"></i>
+                            Les mots sont sélectionnables
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-professional h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-lightbulb me-2"></i>Comment l'utiliser
+                    </h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-search text-success me-2"></i>
+                            Cliquez sur les mots pour les sélectionner
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-chart-line text-success me-2"></i>
+                            La taille reflète la fréquence d'apparition
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-filter text-success me-2"></i>
+                            Utilisez les filtres pour affiner l'analyse
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-download text-success me-2"></i>
+                            Téléchargez pour une utilisation hors ligne
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
+
 {% elif error %}
-    <div class="alert alert-danger" role="alert">
-        ❌ {{ error }}
+    <div class="card shadow-professional border-danger">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-exclamation-triangle fa-4x text-danger mb-4"></i>
+            <h4 class="text-danger mb-3">Erreur de génération</h4>
+            <p class="text-muted fs-5">{{ error }}</p>
+            <a href="/wordcloud" class="btn btn-primary">
+                <i class="fas fa-redo me-2"></i>Réessayer
+            </a>
+        </div>
     </div>
 {% else %}
-    <div class="alert alert-warning" role="alert">
-        ⚠️ Cliquez sur "Générer" pour créer le nuage de mots.
+    <div class="card shadow-professional">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-cloud fa-4x text-muted mb-4"></i>
+            <h4 class="text-muted mb-3">Prêt à générer votre nuage de mots</h4>
+            <p class="text-muted fs-5">
+                Configurez vos paramètres ci-dessus et cliquez sur "Générer le nuage de mots" pour commencer l'analyse.
+            </p>
+        </div>
     </div>
 {% endif %}
 
