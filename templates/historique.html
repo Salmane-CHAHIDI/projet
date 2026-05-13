@@ -4,29 +4,72 @@
 
 {% block content %}
 
-<!-- En-tête de la page -->
-<div class="row mb-5">
-    <div class="col-12">
-        <div class="text-center mb-5">
-            <h1 class="display-4 fw-bold text-gradient mb-3">
-                <i class="fas fa-chart-line me-3"></i>Historique des Consultations
-            </h1>
-            <p class="lead text-muted fs-5">
-                Suivez l'activité des utilisateurs et les articles consultés
-            </p>
+<div class="row mb-4">
+    <div class="col-12 text-center">
+        <h1 class="display-4 fw-bold text-gradient mb-3">
+            <i class="fas fa-chart-line me-3"></i>Historique des Consultations
+        </h1>
+        <p class="lead text-muted fs-5">
+            Suivez les articles consultés et recherchez dans votre historique
+        </p>
+    </div>
+</div>
+
+<!-- Barre de recherche -->
+<div class="card shadow-professional mb-4">
+    <div class="card-body">
+        <h4 class="card-title mb-4">
+            <i class="fas fa-search me-2"></i>Rechercher dans l'historique
+        </h4>
+        <form method="GET" action="/historique" class="row g-3">
+            <div class="col-md-4">
+                <label for="keyword" class="form-label fw-semibold">
+                    <i class="fas fa-keyboard me-1"></i>Titre de l'article
+                </label>
+                <input type="text" id="keyword" name="keyword" class="form-control"
+                       placeholder="Mot-clé dans le titre..." value="{{ keyword or '' }}">
+            </div>
+            <div class="col-md-3">
+                <label for="start_date" class="form-label fw-semibold">
+                    <i class="fas fa-calendar-alt me-1"></i>Date de début
+                </label>
+                <input type="date" id="start_date" name="start_date" class="form-control"
+                       value="{{ start_date or '' }}">
+            </div>
+            <div class="col-md-3">
+                <label for="end_date" class="form-label fw-semibold">
+                    <i class="fas fa-calendar-alt me-1"></i>Date de fin
+                </label>
+                <input type="date" id="end_date" name="end_date" class="form-control"
+                       value="{{ end_date or '' }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-1"></i>Filtrer
+                </button>
+            </div>
+        </form>
+        {% if keyword or start_date or end_date %}
+        <div class="mt-3">
+            <a href="/historique" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-times me-1"></i>Réinitialiser les filtres
+            </a>
         </div>
+        {% endif %}
     </div>
 </div>
 
 <!-- Statistiques -->
 {% if data %}
-<div class="row mb-5">
+<div class="row mb-4">
     <div class="col-md-4">
         <div class="card shadow-professional text-center h-100">
             <div class="card-body">
                 <i class="fas fa-eye fa-3x text-primary mb-3"></i>
                 <h2 class="text-primary mb-1">{{ data|length }}</h2>
-                <p class="text-muted mb-0">Consultations totales</p>
+                <p class="text-muted mb-0">
+                    {% if keyword or start_date or end_date %}Résultats trouvés{% else %}Consultations totales{% endif %}
+                </p>
             </div>
         </div>
     </div>
@@ -34,13 +77,7 @@
         <div class="card shadow-professional text-center h-100">
             <div class="card-body">
                 <i class="fas fa-calendar-day fa-3x text-success mb-3"></i>
-                <h4 class="text-success mb-1">
-                    {% if data %}
-                        {{ data[0].date_consultation.strftime('%d/%m/%Y') }}
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </h4>
+                <h4 class="text-success mb-1">{{ data[0].date_consultation.strftime('%d/%m/%Y') }}</h4>
                 <p class="text-muted mb-0">Dernière consultation</p>
             </div>
         </div>
@@ -49,13 +86,7 @@
         <div class="card shadow-professional text-center h-100">
             <div class="card-body">
                 <i class="fas fa-clock fa-3x text-info mb-3"></i>
-                <h4 class="text-info mb-1">
-                    {% if data %}
-                        {{ data[0].date_consultation.strftime('%H:%M') }}
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </h4>
+                <h4 class="text-info mb-1">{{ data[0].date_consultation.strftime('%H:%M') }}</h4>
                 <p class="text-muted mb-0">Heure de la dernière consultation</p>
             </div>
         </div>
@@ -98,10 +129,13 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         {% if consultation.article.image %}
-                                            <img src="{{ consultation.article.image }}" alt="Image article" class="article-thumbnail me-3" style="width: 60px; height: 40px; object-fit: cover; border-radius: 4px;">
+                                            <img src="{{ consultation.article.image }}" alt="Image article"
+                                                 style="width:60px; height:40px; object-fit:cover; border-radius:4px;"
+                                                 class="me-3" onerror="this.style.display='none'">
                                         {% endif %}
                                         <div>
-                                            <a href="{{ consultation.article.url }}" target="_blank" class="text-decoration-none fw-semibold text-dark">
+                                            <a href="{{ consultation.article.url }}" target="_blank"
+                                               class="text-decoration-none fw-semibold text-dark">
                                                 {{ consultation.article.title }}
                                             </a>
                                             <br>
@@ -131,34 +165,29 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- Pagination si nécessaire -->
-            {% if data|length > 50 %}
-            <div class="d-flex justify-content-center mt-4">
-                <nav aria-label="Navigation des consultations">
-                    <ul class="pagination">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Précédent</a>
-                        </li>
-                        <li class="page-item active">
-                            <a class="page-link" href="#">1</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Suivant</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-            {% endif %}
-
         {% else %}
             <div class="text-center py-5">
                 <i class="fas fa-history fa-4x text-muted mb-4"></i>
-                <h4 class="text-muted mb-3">Aucune consultation enregistrée</h4>
+                <h4 class="text-muted mb-3">
+                    {% if keyword or start_date or end_date %}
+                        Aucune consultation trouvée pour ces critères
+                    {% else %}
+                        Aucune consultation enregistrée
+                    {% endif %}
+                </h4>
                 <p class="text-muted fs-5">
-                    Les consultations d'articles apparaîtront ici une fois que les utilisateurs auront commencé à lire des articles.
+                    {% if keyword or start_date or end_date %}
+                        Essayez de modifier vos critères de recherche.
+                    {% else %}
+                        Les consultations apparaîtront ici une fois que des articles auront été lus.
+                    {% endif %}
                 </p>
-                <a href="/" class="btn btn-primary btn-lg">
+                {% if keyword or start_date or end_date %}
+                    <a href="/historique" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-times me-1"></i>Réinitialiser
+                    </a>
+                {% endif %}
+                <a href="/" class="btn btn-primary">
                     <i class="fas fa-home me-2"></i>Aller à l'accueil
                 </a>
             </div>

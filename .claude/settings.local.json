@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import sys; sys.path.insert\\(0, 'src'\\); import main\")",
+      "Bash(python -c \"import sys; sys.path.insert\\(0, 'src'\\); import main; print\\('OK'\\)\")",
+      "Bash(python -c ' *)"
+    ]
+  }
+}

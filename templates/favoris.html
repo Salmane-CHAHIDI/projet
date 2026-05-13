@@ -4,98 +4,215 @@
 
 {% block content %}
 
-<div class="row mb-5">
+<div class="row mb-4">
     <div class="col-12 text-center">
         <h1 class="display-4 fw-bold text-gradient mb-3">
             <i class="fas fa-star me-3"></i>Mes Favoris
         </h1>
         <p class="lead text-muted fs-5">
-            Retrouvez ici les articles que vous avez ajoutés à vos favoris depuis la page d'accueil.
+            Retrouvez ici les articles que vous avez ajoutés à vos favoris, organisés par catégorie.
         </p>
     </div>
 </div>
 
-<div class="card shadow-professional">
+<!-- Gestion des catégories -->
+<div class="card shadow-professional mb-4">
     <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-column flex-md-row gap-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="card-title mb-0">
+                <i class="fas fa-tags me-2"></i>Gérer les catégories
+            </h4>
+            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#newCategorieForm">
+                <i class="fas fa-plus me-1"></i>Nouvelle catégorie
+            </button>
+        </div>
+
+        <!-- Formulaire création catégorie -->
+        <div class="collapse mb-3" id="newCategorieForm">
+            <form method="POST" action="/categories/add" class="d-flex gap-2 mt-3">
+                <input type="text" name="name" class="form-control"
+                       placeholder="Nom de la nouvelle catégorie..." required maxlength="50">
+                <button type="submit" class="btn btn-success text-nowrap">
+                    <i class="fas fa-check me-1"></i>Créer
+                </button>
+            </form>
+        </div>
+
+        <!-- Liste des catégories avec actions -->
+        <div class="d-flex flex-wrap gap-2">
+            {% for cat in categories %}
+                <div class="d-flex align-items-center gap-1">
+                    <span class="badge bg-secondary fs-6 px-3 py-2">{{ cat }}</span>
+                    <button class="btn btn-outline-secondary btn-sm py-1 px-2"
+                            onclick="openEditModal('{{ cat }}')" title="Renommer">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    {% if cat != 'Général' %}
+                    <button class="btn btn-outline-danger btn-sm py-1 px-2"
+                            onclick="confirmDelete('{{ cat }}')" title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Filtre et compteur -->
+<div class="card shadow-professional mb-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center flex-column flex-md-row gap-3">
             <div>
                 <h4 class="card-title mb-1">
                     <i class="fas fa-heart me-2"></i>Articles favoris
                 </h4>
-                <p class="text-muted mb-0">Les derniers articles ajoutés à vos favoris apparaissent ci-dessous.</p>
+                <p class="text-muted mb-0">{{ favorites|length }} article{{ 's' if favorites|length > 1 else '' }} au total</p>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <form method="get" action="/favoris" class="d-flex align-items-center gap-2 mb-0">
-                    <label for="catalogue-filter" class="mb-0 text-muted">Filtrer :</label>
-                    <select id="catalogue-filter" name="catalogue" class="form-select form-select-sm">
-                        <option value="">Tous les catalogues</option>
-                        {% if catalogues %}
-                            {% for cat in catalogues %}
-                                <option value="{{ cat }}" {% if selected_catalogue == cat %}selected{% endif %}>{{ cat }}</option>
-                            {% endfor %}
-                        {% endif %}
-                    </select>
-                    <button type="submit" class="btn btn-sm btn-outline-secondary">Appliquer</button>
-                </form>
-                <span class="badge bg-info fs-6">{{ favorites|length }} article{{ 's' if favorites|length > 1 else '' }}</span>
-            </div>
+            <form method="get" action="/favoris" class="d-flex align-items-center gap-2 mb-0">
+                <label for="categorie-filter" class="mb-0 text-muted fw-semibold text-nowrap">Filtrer par catégorie :</label>
+                <select id="categorie-filter" name="categorie" class="form-select form-select-sm"
+                        style="min-width:180px" onchange="this.form.submit()">
+                    <option value="">Toutes les catégories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}" {% if selected_categorie == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </form>
         </div>
+    </div>
+</div>
 
-        {% if favorites and favorites|length > 0 %}
-            {% set favorites_by_catalogue = favorites_by_catalogue if favorites_by_catalogue is defined else {'Général': favorites} %}
-            {% for catalogue, items in favorites_by_catalogue.items() %}
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h5 class="mb-1">Catalogue : {{ catalogue }}</h5>
-                            <p class="text-muted mb-0">{{ items|length }} article{{ 's' if items|length > 1 else '' }} dans cette catégorie.</p>
-                        </div>
-                        <span class="badge bg-secondary">{{ catalogue }}</span>
-                    </div>
+<!-- Articles par catégorie -->
+{% if favorites and favorites|length > 0 %}
+    {% for categorie, items in favorites_by_categorie.items() %}
+        <div class="mb-5">
+            <div class="d-flex align-items-center mb-3">
+                <h5 class="mb-0">
+                    <i class="fas fa-tag me-2"></i>{{ categorie }}
+                    <span class="badge bg-info ms-2">{{ items|length }}</span>
+                </h5>
+            </div>
 
-                    <div class="row g-4">
-                        {% for fav in items %}
-                            <div class="col-md-12">
-                                <div class="card border-0 shadow-sm">
-                                    <div class="row g-0 align-items-center">
-                                        {% if fav.article.image %}
-                                        <div class="col-auto">
-                                            <img src="{{ fav.article.image }}" alt="Image article" class="img-fluid rounded-start" style="width: 150px; height: 100px; object-fit: cover;">
-                                        </div>
-                                        {% endif %}
-                                        <div class="col">
-                                            <div class="card-body">
-                                                <h5 class="card-title mb-2">
-                                                    <a href="/click/{{ fav.article._id }}" target="_blank" class="text-decoration-none text-dark">
-                                                        {{ fav.article.title }}
-                                                    </a>
-                                                </h5>
-                                                <p class="card-text mb-2 text-muted">
-                                                    {{ fav.article.source }} - {{ fav.article.date_publication.strftime('%d/%m/%Y') if fav.article.date_publication else 'N/A' }}
-                                                </p>
-                                                <a href="/click/{{ fav.article._id }}" target="_blank" class="btn btn-sm btn-primary">
-                                                    <i class="fas fa-external-link-alt me-1"></i>Lire l'article
-                                                </a>
-                                            </div>
-                                        </div>
+            <div class="row g-3">
+                {% for fav in items %}
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="row g-0 align-items-center">
+                                {% if fav.article.image %}
+                                <div class="col-auto">
+                                    <img src="{{ fav.article.image }}" alt="Image article"
+                                         class="img-fluid rounded-start"
+                                         style="width:150px; height:100px; object-fit:cover;"
+                                         onerror="this.style.display='none'">
+                                </div>
+                                {% endif %}
+                                <div class="col">
+                                    <div class="card-body py-3">
+                                        <h6 class="card-title mb-1">
+                                            <a href="/click/{{ fav.article._id }}" target="_blank"
+                                               class="text-decoration-none text-dark fw-bold">
+                                                {{ fav.article.title }}
+                                            </a>
+                                        </h6>
+                                        <p class="card-text mb-2 text-muted small">
+                                            <i class="fas fa-building me-1"></i>{{ fav.article.source }}
+                                            &nbsp;·&nbsp;
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ fav.article.date_publication.strftime('%d/%m/%Y') if fav.article.date_publication else 'N/A' }}
+                                        </p>
+                                        <a href="/click/{{ fav.article._id }}" target="_blank" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-external-link-alt me-1"></i>Lire l'article
+                                        </a>
                                     </div>
                                 </div>
                             </div>
-                        {% endfor %}
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <div class="text-center py-5">
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="text-center py-5">
+        <div class="card shadow-professional">
+            <div class="card-body py-5">
                 <i class="fas fa-star fa-4x text-muted mb-4"></i>
                 <h4 class="mb-3">Aucun favori pour le moment</h4>
-                <p class="text-muted">Ajoutez un article depuis la page d'accueil en cliquant sur l'étoile.</p>
+                <p class="text-muted">Ajoutez des articles depuis la page d'accueil en cliquant sur l'étoile.</p>
                 <a href="/" class="btn btn-primary btn-lg">
                     <i class="fas fa-home me-2"></i>Retour à l'accueil
                 </a>
             </div>
-        {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+<!-- Modal renommer catégorie -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="/categories/update">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-pen me-2"></i>Renommer la catégorie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="old_name" id="editOldName">
+                    <label class="form-label fw-semibold">Nouveau nom</label>
+                    <input type="text" name="new_name" id="editNewName" class="form-control" required maxlength="50">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>Renommer
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<!-- Modal supprimer catégorie -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="/categories/delete">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-trash me-2 text-danger"></i>Supprimer la catégorie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="name" id="deleteCatName">
+                    <p>Êtes-vous sûr de vouloir supprimer la catégorie <strong id="deleteCatLabel"></strong> ?</p>
+                    <p class="text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Les articles de cette catégorie seront déplacés vers <strong>Général</strong>.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Supprimer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openEditModal(catName) {
+    document.getElementById('editOldName').value = catName;
+    document.getElementById('editNewName').value = catName;
+    new bootstrap.Modal(document.getElementById('editModal')).show();
+}
+
+function confirmDelete(catName) {
+    document.getElementById('deleteCatName').value = catName;
+    document.getElementById('deleteCatLabel').textContent = '"' + catName + '"';
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
 
 {% endblock %}

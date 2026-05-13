@@ -138,15 +138,79 @@
                 <h4 class="card-title mb-3">
                     <i class="fas fa-sync-alt me-2"></i>Récupération des articles
                 </h4>
+
                 <p class="text-muted mb-4">
                     Lancez la récupération automatique des articles depuis toutes les sources abonnées.
                 </p>
-                <a href="/collect_all" class="btn btn-primary btn-lg">
-                    <i class="fas fa-play-circle me-2"></i>Récupérer tous les articles
-                </a>
+
+                <!-- Zone de notification -->
+                <div id="collectAlert" class="alert d-none mb-4" role="alert"></div>
+
+                <!-- Bouton AJAX -->
+                <button
+                    id="collectBtn"
+                    type="button"
+                    class="btn btn-primary btn-lg"
+                >
+                    <i class="fas fa-play-circle me-2"></i>
+                    Récupérer tous les articles
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Script AJAX -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const btn = document.getElementById("collectBtn");
+    const alertBox = document.getElementById("collectAlert");
+
+    btn.addEventListener("click", async function () {
+        // Sauvegarder le contenu initial du bouton
+        const originalHTML = btn.innerHTML;
+
+        // Désactiver le bouton et afficher un spinner
+        btn.disabled = true;
+        btn.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            Récupération en cours...
+        `;
+
+        // Réinitialiser l'alerte
+        alertBox.className = "alert alert-info mb-4";
+        alertBox.classList.remove("d-none");
+        alertBox.innerHTML = `
+            <i class="fas fa-info-circle me-2"></i>
+            Collecte des articles en cours...
+        `;
+
+        try {
+            // Appel AJAX vers /collect_all
+            const response = await fetch("/collect_all");
+            const data = await response.json();
+
+            // Succès
+            alertBox.className = "alert alert-success mb-4";
+            alertBox.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>Collecte terminée avec succès.</strong><br>
+            `;
+        } catch (error) {
+            // Erreur
+            alertBox.className = "alert alert-danger mb-4";
+            alertBox.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Une erreur est survenue lors de la récupération des articles.
+            `;
+            console.error(error);
+        } finally {
+            // Réactiver le bouton
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+        }
+    });
+});
+</script>
 
 {% endblock %}
