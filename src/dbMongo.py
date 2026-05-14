@@ -186,7 +186,7 @@ def delete_category(name):
     if name == "Général":
         return False
     categories_col.delete_one({"name": name})
-    favoris.update_many({"catalogue": name}, {"$set": {"catalogue": "Général"}})
+    favoris.delete_many({"catalogue": name})
     return True
 
 

@@ -3,7 +3,8 @@
     "allow": [
       "Bash(python -c \"import sys; sys.path.insert\\(0, 'src'\\); import main\")",
       "Bash(python -c \"import sys; sys.path.insert\\(0, 'src'\\); import main; print\\('OK'\\)\")",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "PowerShell(Get-ChildItem \"c:\\\\Users\\\\Etudiant\\\\OneDrive - Universite de Lorraine\\\\Bureau\\\\M1\\\\strucuration de données\\\\projet\" | Where-Object { $_.Name -ne \".venv\" } | Select-Object Name, LastWriteTime)"
     ]
   }
 }
